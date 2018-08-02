@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +64,19 @@ public class SqliteHighlighter implements Highlighter {
     static List<String> getKeywords() throws URISyntaxException, IOException {
 
         return Files.readAllLines(Paths.get(SqliteHighlighter.class.getResource("/keywords_sqlite.txt").toURI()));
+    }
+
+    @Override
+    public List<String> getAllKeywords() {
+        try {
+            return getKeywords();
+        } catch (URISyntaxException e) {
+            Logger.getLogger(SqliteHighlighter.class.getName()).log(Level.SEVERE, e.getMessage());
+            return new ArrayList<>();
+        } catch (IOException e) {
+            Logger.getLogger(SqliteHighlighter.class.getName()).log(Level.SEVERE, e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public List<String> getMatcherGroupNames() {

@@ -25,35 +25,40 @@ package ch.gaps.slasher.views.editor;
 
 import ch.gaps.slasher.Slasher;
 import ch.gaps.slasher.database.driver.database.Database;
+import ch.gaps.slasher.database.driver.database.Table;
 import ch.gaps.slasher.views.dataTableView.DataTableController;
 import ch.gaps.slasher.views.main.MainController;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
+import javafx.geometry.Bounds;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.reactfx.EventStream;
 import org.reactfx.Subscription;
 
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
+
+import static org.reactfx.EventStreams.nonNullValuesOf;
 
 /**
  * @author j.leroy
@@ -75,6 +80,13 @@ public class EditorController {
   // used for the asynchronous code highlighting
   private Executor executor;
 
+  // popup for the text completion
+  private ContextMenu entriesPopup;
+
+  // dictionary for the text completion
+  // contains only upper case words
+  private SortedSet<String> entries;
+
 
   @FXML
   private void initialize() {
@@ -94,6 +106,7 @@ public class EditorController {
       e.printStackTrace();
     }
 
+    // highlighting
     executor = Executors.newSingleThreadExecutor();
     request.setParagraphGraphicFactory(LineNumberFactory.get(request));
 
@@ -110,6 +123,77 @@ public class EditorController {
               }
             })
             .subscribe(this::applyHighlighting);
+
+    // text completion
+    entries = new TreeSet<>();
+    entriesPopup = new ContextMenu();
+
+    EventStream<Optional<Bounds>> caretBounds = nonNullValuesOf(request.caretBoundsProperty());
+
+    request.textProperty().addListener(new ChangeListener<String>() {
+        public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
+            String lastWord = getLastWord().toUpperCase();
+            if (lastWord.length() == 0) {
+                entriesPopup.hide();
+            } else {
+                LinkedList<String> searchResult = new LinkedList<>();
+                searchResult.addAll(entries.subSet(lastWord, lastWord + Character.MAX_VALUE));
+                if (entries.size() > 0) {
+                    populatePopup(searchResult);
+                    if (!entriesPopup.isShowing()) {
+                        entriesPopup.show(request, request.getCaretBounds().get().getMaxX(), request.getCaretBounds().get().getMaxY());
+                    }
+                } else {
+                    entriesPopup.hide();
+                }
+            }
+        }
+    });
+
+  }
+
+  /**
+   * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
+   * @param searchResult The set of matching strings.
+   */
+  private void populatePopup(List<String> searchResult) {
+      List<CustomMenuItem> menuItems = new LinkedList<>();
+      // If you'd like more entries, modify this line.
+      int maxEntries = 10;
+      int count = Math.min(searchResult.size(), maxEntries);
+      for (int i = 0; i < count; i++) {
+          final String result = searchResult.get(i);
+          Label entryLabel = new Label(result);
+          CustomMenuItem item = new CustomMenuItem(entryLabel, true);
+          item.setOnAction(new EventHandler<ActionEvent>() {
+              public void handle(ActionEvent actionEvent) {
+                  replaceLastWord(result);
+                  entriesPopup.hide();
+              }
+          });
+          menuItems.add(item);
+      }
+      entriesPopup.getItems().clear();
+      entriesPopup.getItems().addAll(menuItems);
+  }
+
+  private String getLastWord() {
+      if (request.getText().isEmpty()) {
+          return "";
+      }
+      String[] words = request.getText().split("[^\\w]+");
+      if (words.length == 0) {
+          return "";
+      }
+      char lastChar = request.getText().charAt(request.getText().length()-1);
+      if (Character.isLetterOrDigit(lastChar) || lastChar == '_')
+          return words[words.length-1];
+      return "";
+  }
+
+  private void replaceLastWord(String word) {
+      String lastWord = getLastWord();
+      request.replaceText(request.getText().substring(0, request.getText().length()-lastWord.length()) + word);
   }
 
   private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
@@ -182,6 +266,7 @@ public class EditorController {
     this.database = database;
     execute.disableProperty().bind(database.enabledProperty().not());
     request.getStylesheets().add(EditorController.class.getResource("highlighting.css").toExternalForm());
+    entries.addAll(database.getHighliter().getAllKeywords());
   }
 
   public String getContent() {

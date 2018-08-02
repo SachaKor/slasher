@@ -1,14 +1,8 @@
 package ch.gaps.slasher.highliter;
-
-import org.fxmisc.richtext.model.StyleSpans;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,6 +31,9 @@ public interface Highlighter {
     static List<String> getKeywords() throws URISyntaxException, IOException {
         return Files.readAllLines(Paths.get(Highlighter.class.getResource("sql2003_keywords.txt").toURI()));
     }
+
+    // TODO: find another way to handle the keywords. Apparently no dynamic links for the static mehods of the interfaces.
+    List<String> getAllKeywords();
 
     List<String> getMatcherGroupNames();
 
