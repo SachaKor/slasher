@@ -25,7 +25,6 @@ package ch.gaps.slasher.views.editor;
 
 import ch.gaps.slasher.Slasher;
 import ch.gaps.slasher.database.driver.database.Database;
-import ch.gaps.slasher.database.driver.database.Table;
 import ch.gaps.slasher.views.dataTableView.DataTableController;
 import ch.gaps.slasher.views.main.MainController;
 import javafx.application.Platform;
@@ -38,7 +37,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -46,7 +44,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.reactfx.EventStream;
 import org.reactfx.Subscription;
 
 import java.io.*;
@@ -82,7 +79,6 @@ public class EditorController {
 
   // popup for the text completion
   private ContextMenu entriesPopup;
-
   // dictionary for the text completion
   // contains only upper case words
   private SortedSet<String> entries;
@@ -125,14 +121,12 @@ public class EditorController {
             .subscribe(this::applyHighlighting);
 
     // text completion
-    entries = new TreeSet<>();
+    entries = new TreeSet<>(String::compareToIgnoreCase);
     entriesPopup = new ContextMenu();
-
-    EventStream<Optional<Bounds>> caretBounds = nonNullValuesOf(request.caretBoundsProperty());
 
     request.textProperty().addListener(new ChangeListener<String>() {
         public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-            String lastWord = getLastWord().toUpperCase();
+            String lastWord = getLastWord();
             if (lastWord.length() == 0) {
                 entriesPopup.hide();
             } else {
