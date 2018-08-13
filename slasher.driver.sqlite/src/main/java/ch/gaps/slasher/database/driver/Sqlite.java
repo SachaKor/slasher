@@ -17,6 +17,8 @@
  */
 package ch.gaps.slasher.database.driver;
 
+import ch.gaps.slasher.corrector.Corrector;
+import ch.gaps.slasher.corrector.SqliteCorrector;
 import ch.gaps.slasher.database.driver.database.*;
 import ch.gaps.slasher.highliter.Highlighter;
 import ch.gaps.slasher.highliter.sqlite.SqliteHighlighter;
@@ -137,7 +139,7 @@ public class Sqlite implements Driver {
     try {
       return connection.createStatement().executeQuery("SELECT * FROM " + table);
     } catch (SQLException e) {
-      e.printStackTrace();
+      Logger.getLogger(Sqlite.class.getName()).log(Level.SEVERE, e.getMessage());
     }
     return null;
   }
@@ -145,6 +147,40 @@ public class Sqlite implements Driver {
   @Override
   public Highlighter getHighlighter() {
     return highlighter;
+  }
+
+  @Override
+  public List<String> getColumnNames(Table table) throws SQLException {
+    List<String> columnNames = new LinkedList<>();
+    Statement statement = connection.createStatement();
+    String tableName = table.name();
+    ResultSet rs = statement.executeQuery("SELECT * FROM " + table.name());
+    ResultSetMetaData rsmd = rs.getMetaData();
+    int columnCount = rsmd.getColumnCount();
+
+    for (int i = 1; i <= columnCount; i++ ) {
+      String name = rsmd.getColumnName(i);
+      columnNames.add(name);
+    }
+    return columnNames;
+  }
+
+  @Override
+  public Table getTable(String name) throws SQLException {
+    // TODO: is there a better way to get one single table by its name?
+    Statement statement = connection.createStatement();
+    List<Table> tables = getTables(null);
+    for (Table t : tables) {
+      if (t.name().equalsIgnoreCase(name)) {
+        return t;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Corrector getCorrector() {
+    return new SqliteCorrector();
   }
 
   public Sqlite() {

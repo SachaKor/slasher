@@ -17,6 +17,7 @@
  */
 package ch.gaps.slasher.database.driver.mysql;
 
+import ch.gaps.slasher.corrector.Corrector;
 import ch.gaps.slasher.database.driver.Driver;
 import ch.gaps.slasher.database.driver.database.*;
 import ch.gaps.slasher.highliter.Highlighter;
@@ -166,10 +167,26 @@ public class MySql implements Driver {
     return connection.createStatement().executeQuery("SELECT * FROM " + table);
   }
 
-  // TODO: implement the MySql highliter and this method
+  // TODO: implement the MySql highlighter and this method
   @Override
   public Highlighter getHighlighter() {
-    return null;
+    throw new UnsupportedOperationException();
+  }
+
+  // TODO: implement
+  @Override
+  public List<String> getColumnNames(Table table) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Table getTable(String name) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Corrector getCorrector() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

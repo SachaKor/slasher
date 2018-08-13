@@ -17,8 +17,10 @@
  */
 package ch.gaps.slasher.database.driver;
 
+import ch.gaps.slasher.corrector.Corrector;
 import ch.gaps.slasher.database.driver.database.*;
 import ch.gaps.slasher.highliter.Highlighter;
+import sun.tools.jconsole.Tab;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -189,5 +191,15 @@ public interface Driver {
     FILE
   }
 
+  /**
+   * Getter
+   * @return the {@link Highlighter} for the given driver
+   */
   Highlighter getHighlighter();
+
+  List<String> getColumnNames(Table table) throws SQLException;
+
+  Table getTable(String name) throws SQLException;
+
+  Corrector getCorrector();
 }

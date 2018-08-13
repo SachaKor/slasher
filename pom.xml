@@ -21,6 +21,9 @@
         <module>slasher.driver.postgres94</module>
         <module>slasher.highlighter</module>
         <module>slasher.highlighter.sqlite</module>
+        <module>slasher.corrector</module>
+        <module>slasher.corrector.sqlite</module>
+        <module>slasher.utils</module>
 
     </modules>
 

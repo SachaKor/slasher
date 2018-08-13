@@ -17,6 +17,7 @@
  */
 package ch.gaps.slasher.database.driver;
 
+import ch.gaps.slasher.corrector.Corrector;
 import ch.gaps.slasher.database.driver.database.*;
 import ch.gaps.slasher.highliter.Highlighter;
 
@@ -172,7 +173,23 @@ public class PostgreSQL94 implements Driver {
   // TODO: implement the PostgreSQL94 method and this method
   @Override
   public Highlighter getHighlighter() {
-    return null;
+    throw new UnsupportedOperationException();
+  }
+
+  // TODO: implement
+  @Override
+  public List<String> getColumnNames(Table table) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Table getTable(String name) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Corrector getCorrector() {
+    throw new UnsupportedOperationException();
   }
 
   @Override

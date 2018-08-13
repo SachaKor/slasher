@@ -7,6 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="slasher.app" />
+        <module name="slasher.corrector" />
+        <module name="slasher.corrector.sqlite" />
         <module name="slasher.driver" />
         <module name="slasher.driver.mysql" />
         <module name="slasher.driver.postgres93" />
@@ -15,11 +17,14 @@
         <module name="slasher.highlighter" />
         <module name="slasher.highlighter.sqlite" />
         <module name="slasher.tool" />
+        <module name="slasher.utils" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="slasher" target="1.8" />
       <module name="slasher.app" target="1.8" />
+      <module name="slasher.corrector" target="1.8" />
+      <module name="slasher.corrector.sqlite" target="1.8" />
       <module name="slasher.driver" target="1.8" />
       <module name="slasher.driver.mysql" target="1.8" />
       <module name="slasher.driver.postgres93" target="1.8" />
@@ -29,6 +34,7 @@
       <module name="slasher.highlighter.sqlite" target="1.8" />
       <module name="slasher.highliter.sqlite" target="1.8" />
       <module name="slasher.tool" target="1.8" />
+      <module name="slasher.utils" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

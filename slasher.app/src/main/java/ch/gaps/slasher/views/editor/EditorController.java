@@ -24,9 +24,14 @@
 package ch.gaps.slasher.views.editor;
 
 import ch.gaps.slasher.Slasher;
+import ch.gaps.slasher.corrector.Corrector;
 import ch.gaps.slasher.database.driver.database.Database;
+import ch.gaps.slasher.database.driver.database.Schema;
+import ch.gaps.slasher.database.driver.database.Table;
+import ch.gaps.slasher.utils.CorrectorResult;
 import ch.gaps.slasher.views.dataTableView.DataTableController;
 import ch.gaps.slasher.views.main.MainController;
+import com.sun.tools.javac.util.Pair;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -49,6 +54,7 @@ import org.reactfx.Subscription;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.BreakIterator;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -144,9 +150,32 @@ public class EditorController {
         }
     });
 
+    // spell checking
+//    Subscription cleanupWhenFinished = request.multiPlainChanges()
+//              .successionEnds(Duration.ofMillis(500))
+//              .subscribe(change -> {
+//                  request.setStyleSpans(0, computeSpellCheck(request.getText()));
+//              });
+
   }
 
-  /**
+//  private StyleSpans<Collection<String>> computeSpellCheck(String text) {
+//      Corrector corrector = database.getCorrector();
+//      Map<String, Pair<Integer, Integer>> result = corrector.checkStatement(text);
+//      StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+//
+//      BreakIterator wb = BreakIterator.getWordInstance();
+//      wb.setText(text);
+//      int lastKwEnd = 0;
+//      for (Pair<Integer, Integer> p : index) {
+//          spansBuilder.add(Collections.emptyList(), p.fst - lastKwEnd);
+//          spansBuilder.add(Collections.singleton("underlined"), p.snd - p.fst);
+//          lastKwEnd = p.snd;
+//      }
+//      return spansBuilder.create();
+//  }
+
+    /**
    * Populate the entry set with the given search results.  Display is limited to 10 entries, for performance.
    * @param searchResult The set of matching strings.
    */
@@ -261,6 +290,21 @@ public class EditorController {
     execute.disableProperty().bind(database.enabledProperty().not());
     request.getStylesheets().add(EditorController.class.getResource("highlighting.css").toExternalForm());
     entries.addAll(database.getHighliter().getAllKeywords());
+    try {
+        List<Table> tables = database.getTables();
+        for (Table t : tables) {
+            System.out.println(t.name());
+            List<String> columns = database.getColumnNames(t);
+            System.out.println("***");
+            for (String col : columns) {
+                System.out.println(col);
+            }
+            System.out.println("***");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
   }
 
   public String getContent() {
@@ -271,25 +315,25 @@ public class EditorController {
     request.replaceText(content);
   }
 
-    public StyleSpans<Collection<String>> computeHighlighting(String text) {
-        List<String> groupNames = database.getHighliter().getMatcherGroupNames();
-        Matcher matcher = database.getHighliter().getPattern().matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
-        while (matcher.find()) {
-            String styleClass = null;
-            for (String gn : groupNames) {
-                if (matcher.group(gn) != null) {
-                    styleClass = gn.toLowerCase();
-                    break;
-                }
-            }
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
-    }
+  public StyleSpans<Collection<String>> computeHighlighting(String text) {
+      List<String> groupNames = database.getHighliter().getMatcherGroupNames();
+      Matcher matcher = database.getHighliter().getPattern().matcher(text);
+      int lastKwEnd = 0;
+      StyleSpansBuilder<Collection<String>> spansBuilder
+              = new StyleSpansBuilder<>();
+      while (matcher.find()) {
+          String styleClass = null;
+          for (String gn : groupNames) {
+              if (matcher.group(gn) != null) {
+                  styleClass = gn.toLowerCase();
+                  break;
+              }
+          }
+          spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+          spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+          lastKwEnd = matcher.end();
+      }
+      spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+      return spansBuilder.create();
+  }
 }

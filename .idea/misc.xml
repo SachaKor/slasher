@@ -8,6 +8,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/corrector/pom.xml" />
         <option value="$PROJECT_DIR$/slasher.highliter.sqlight/pom.xml" />
       </set>
     </option>

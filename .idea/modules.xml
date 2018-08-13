@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/slasher.iml" filepath="$PROJECT_DIR$/slasher.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.app/slasher.app.iml" filepath="$PROJECT_DIR$/slasher.app/slasher.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/slasher.corrector/slasher.corrector.iml" filepath="$PROJECT_DIR$/slasher.corrector/slasher.corrector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/slasher.corrector.sqlite/slasher.corrector.sqlite.iml" filepath="$PROJECT_DIR$/slasher.corrector.sqlite/slasher.corrector.sqlite.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.driver/slasher.driver.iml" filepath="$PROJECT_DIR$/slasher.driver/slasher.driver.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.driver.mysql/slasher.driver.mysql.iml" filepath="$PROJECT_DIR$/slasher.driver.mysql/slasher.driver.mysql.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.driver.postgres93/slasher.driver.postgres93.iml" filepath="$PROJECT_DIR$/slasher.driver.postgres93/slasher.driver.postgres93.iml" />
@@ -12,6 +14,7 @@
       <module fileurl="file://$PROJECT_DIR$/slasher.highlighter/slasher.highlighter.iml" filepath="$PROJECT_DIR$/slasher.highlighter/slasher.highlighter.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.highlighter.sqlite/slasher.highlighter.sqlite.iml" filepath="$PROJECT_DIR$/slasher.highlighter.sqlite/slasher.highlighter.sqlite.iml" />
       <module fileurl="file://$PROJECT_DIR$/slasher.tool/slasher.tool.iml" filepath="$PROJECT_DIR$/slasher.tool/slasher.tool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/slasher.utils/slasher.utils.iml" filepath="$PROJECT_DIR$/slasher.utils/slasher.utils.iml" />
     </modules>
   </component>
 </project>
